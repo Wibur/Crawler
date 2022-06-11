@@ -20,4 +20,8 @@ class Crawls extends Model
     public function getCrawlsList($size) {
         return Db::table($this->table)->paginate($size);
     }
+
+    public function getScreenshot($id) {
+        return Db::table($this->table)->where('id', $id)->value('screenshot');
+    }
 }

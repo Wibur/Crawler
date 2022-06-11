@@ -18,16 +18,21 @@ class CrawlerLogic
         $crawler = $client->request('GET', $url);
         // 通常只有一個 取第一個為主
         $title = $crawler->filter('title')->eq(0)->text();
-        $description = $crawler->filterXpath('//meta[@name="description"]')->attr('content');
+        // 部分站沒有
+        try {
+            $description = $crawler->filterXpath('//meta[@name="description"]')->attr('content');
+        } catch (\Exception $e) {
+            $description = '';
+        }
         $body = $crawler->filter('body')->text();
         $screenshot = $this->screenshot($url);
 
         $insertData = [
             'screenshot' => $screenshot ?? '',
             'link' => $url,
-            'title' => $title ?? '',
-            'body' => $body ?? '',
-            'description' => $description ?? '',
+            'title' => $title,
+            'body' => $body,
+            'description' => $description,
             'created_at' => date('Y-m-d H:i:s')
         ];
 
@@ -42,9 +47,14 @@ class CrawlerLogic
         return $this->crawlModel->getCrawlsList($size);
     }
 
+    public function getImage($id) {
+        return $this->crawlModel->getImage($id);
+    }
+
      private function screenshot($url) {
         // 此處使用絕對路徑
-        $path = "/var/www/storage/screenshot/".uniqid().'.png';
+         $fileName = uniqid().'.png';
+         $path = base_path()."/storage/app/public/".$fileName;
          Browsershot::url($url)
                  ->noSandbox()
                  ->setOption('landscape', true)
@@ -52,7 +62,7 @@ class CrawlerLogic
                  ->waitUntilNetworkIdle()
                  ->save($path);
 
-         return $path;
+         return '/storage/'.$fileName;
      }
 
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Input, Table, Pagination } from "semantic-ui-react";
+import { Input, Table, Pagination, Image, Button, Dropdown } from "semantic-ui-react";
 import axios from "axios";
 
 import "semantic-ui-css/semantic.min.css";
@@ -13,12 +13,33 @@ function App() {
         // total: 10,
     });
     const [searchData, setSearchData] = useState("");
+    const httpOption = [
+        {key:'http://', value:'http://', text: 'http://'},
+        {key:'https://', value:'https://', text:'https://'}
+    ]   ;
+    const [http, setHttp] = useState(httpOption[0].value)
 
     /**
      * 查詢
      */
     const search = () => {
-        console.log(searchData);
+        console.log(searchData)
+        axios.
+            get("/api/crawler", {
+                params: !searchData ? undefined : {
+                    url: `${http}${searchData}`
+                }
+            })
+            .then((res) => {
+                if (!res) {
+                    return
+                }
+                console.log(res)
+                handlePaginationChange({activePage: 1})
+            })
+            .catch((err) => {
+                console.log(err);
+            })
     };
 
     /**
@@ -59,10 +80,13 @@ function App() {
     return (
         <div className="app">
             <Input
-                action={{ icon: "search" }}
-                onChange={setSearchData}
+                label={
+                    <Dropdown onChange={(e, d) => setHttp(d.value)} defaultValue='http://' options={httpOption}
+                />}
+                onChange={(e, d) => setSearchData(d.value)}
                 placeholder="請輸入url"
             />
+            <Button name="search" content="submit" onClick={search} />
 
             <Table singleLine>
                 <Table.Header>
@@ -70,7 +94,7 @@ function App() {
                         <Table.HeaderCell content="ScreenShot" />
                         <Table.HeaderCell content="title" />
                         <Table.HeaderCell content="description" />
-                        {/*<Table.HeaderCell content="body" />*/}
+                        <Table.HeaderCell content="body" />
                         <Table.HeaderCell content="createdAt" />
                     </Table.Row>
                 </Table.Header>
@@ -79,13 +103,13 @@ function App() {
                     {data && data.map((v) => (
                         <Table.Row key={v.id}>
                             <Table.Cell>
-                                <img src={v.screenshot} />
+                                <Image src={`${location.origin}:${location.port}${v.screenshot}`} />
                             </Table.Cell>
                             <Table.Cell>
                                 <a href={v.link}>{v.title}</a>
                             </Table.Cell>
                             <Table.Cell content={v.description} />
-                            {/*<Table.Cell content={v.body} />*/}
+                            <Table.Cell className="bct" content={v.body} />
                             <Table.Cell content={v.created_at} />
                         </Table.Row>
                     ))}

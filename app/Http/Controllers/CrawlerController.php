@@ -15,8 +15,10 @@ class CrawlerController extends Controller
         $url = $request->input('url', 'https://www.symfony.com/blog/');
 
         try {
-            $result = $logic->insertData($url);
+            $logic->insertData($url);
+            return response()->json([], 200);
         } catch (\Exception $e) {
+            var_dump($e->getMessage());
             errorResponse($e->getCode(), $e);
         }
     }
@@ -34,13 +36,13 @@ class CrawlerController extends Controller
         }
     }
 
-    public function testScreen(CrawlerLogic $logic) {
-        try {
-            return $logic->screenshotGoogle();
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-        }
-    }
+//    public function testScreen(CrawlerLogic $logic) {
+//        try {
+//            return $logic->screenshotGoogle();
+//        } catch (\Exception $e) {
+//            dd($e->getMessage());
+//        }
+//    }
 
     /**
      * 列表
