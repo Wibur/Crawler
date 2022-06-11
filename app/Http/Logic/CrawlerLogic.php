@@ -2,7 +2,7 @@
 
 namespace App\Http\Logic;
 
-// use Spatie\Browsershot\Browsershot;
+use Spatie\Browsershot\Browsershot;
 use Goutte\Client;
 use App\Models\Crawls;
 
@@ -19,8 +19,9 @@ class CrawlerLogic
         // 通常只有一個 取第一個為主
         $title = $crawler->filter('title')->eq(0)->text();
         $description = $crawler->filterXpath('//meta[@name="description"]')->attr('content');
-        // $body;
-        
+        $body = $crawler->filter('body')->text();
+        $screenshot = $this->screenshot($url);
+
         $insertData = [
             'screenshot' => $screenshot ?? '',
             'link' => $url,
@@ -29,7 +30,7 @@ class CrawlerLogic
             'description' => $description ?? '',
             'created_at' => date('Y-m-d H:i:s')
         ];
-        
+
         $isCreated = $this->crawlModel->insert($insertData);
 
         if ($isCreated === false) {
@@ -37,18 +38,22 @@ class CrawlerLogic
         }
     }
 
-    public function getCrawlsListData(int $page = 1, int $size = 10) {
-        return $this->crawlModel->getCrawlsList($page, $size);
+    public function getCrawlsListData(int $size = 10) {
+        return $this->crawlModel->getCrawlsList($size);
     }
 
-    // public function screenshotGoogle() {
-    //     Browsershot::url('https://google.com')
-    //             ->noSandbox()
-    //             ->setOption('landscape', true)
-    //             ->windowSize(2048, 980)
-    //             ->waitUntilNetworkIdle()
-    //             ->save("storage/" . 'googlescreenshot.jpg');
-    // }
-    
+     private function screenshot($url) {
+        // 此處使用絕對路徑
+        $path = "/var/www/storage/screenshot/".uniqid().'.png';
+         Browsershot::url($url)
+                 ->noSandbox()
+                 ->setOption('landscape', true)
+                 ->windowSize(2048, 1920)
+                 ->waitUntilNetworkIdle()
+                 ->save($path);
+
+         return $path;
+     }
+
 
 }

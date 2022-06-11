@@ -13,7 +13,7 @@ class CrawlerController extends Controller
      */
     public function crawl(Request $request, CrawlerLogic $logic) {
         $url = $request->input('url', 'https://www.symfony.com/blog/');
-        
+
         try {
             $result = $logic->insertData($url);
         } catch (\Exception $e) {
@@ -24,19 +24,33 @@ class CrawlerController extends Controller
     /**
      * 單筆詳細
      */
-    public function getCrawler() {
-        
+    public function getCrawler(Request $request, CrawlerLogic $logic) {
+        $id = $request->input('id');
+
+        try {
+            $result = $logic->getCrawler($id);
+        } catch (\Exception $e) {
+            errorResponse($e->getCode(), $e);
+        }
+    }
+
+    public function testScreen(CrawlerLogic $logic) {
+        try {
+            return $logic->screenshotGoogle();
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 
     /**
      * 列表
      */
     public function getCrawlList(Request $request, CrawlerLogic $logic) {
-        $page = $request->input('page', 1);
+//        $page = $request->input('page', 1);
         $size = $request->input('pageSize', 10);
 
-        $data = $logic->getCrawlsListData($page, $size);
+        $data = $logic->getCrawlsListData($size);
 
-        return view('crawl.index', compact('data'));
+        return compact('data');
     }
 }

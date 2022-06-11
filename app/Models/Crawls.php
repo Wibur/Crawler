@@ -17,7 +17,7 @@ class Crawls extends Model
         return Db::table($this->table)->insert($data);
     }
 
-    public function getCrawlsList($page, $size) {
+    public function getCrawlsList($size) {
         return Db::table($this->table)->paginate($size);
     }
 }

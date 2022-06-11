@@ -10,8 +10,9 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
-
+// 打包後在public/js下
 mix.js('resources/js/app.js', 'public/js')
+    .react()
     .postCss('resources/css/app.css', 'public/css', [
         //
     ]);

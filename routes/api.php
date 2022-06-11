@@ -20,6 +20,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 use App\Http\Controllers\CrawlerController;
 
+// 爬蟲
 Route::get('/crawler', [CrawlerController::class, 'crawl']);
-Route::get('/getCrawler', [CrawlerController::class, 'getCrawl']);
+// 取得細項
+//Route::get('/getCrawler', [CrawlerController::class, 'getCrawler']);
+// 取得列表
 Route::get('/getCrawlerList', [CrawlerController::class, 'getCrawlList']);
+Route::get('/crawl', function () {
+    return view('crawl.index');
+});

@@ -20,7 +20,7 @@ class CreateCrawlTable extends Migration
             $table->string('title')->nullable()->default('NULL');
             $table->string('link', 50)->notnull();
             $table->string('description')->nullable()->default('NULL');
-            $table->text('body')->nullable()->default('NULL');
+            $table->text('body')->nullable();
             $table->dateTime('created_at');
         });
     }
