@@ -14,6 +14,7 @@
 > docker exec -it xxxxx /bin/bash
 
 ## 執行指令
+- cp .env.example .env
 - npm install
 - composer install
 - php artisan migrate
